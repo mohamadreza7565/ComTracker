@@ -5,9 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.telephony.TelephonyManager
 import android.util.Log
+import com.app.comtracker.utilities.PrefExt
 
 class CallReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+
+        if (!PrefExt.isCallTrackingEnabled(context = context)) return
+
         if (intent.action == TelephonyManager.ACTION_PHONE_STATE_CHANGED) {
             Log.i("TAG", "ComTrackerLogChecker CallReceiver -> received")
             val state = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
@@ -15,7 +19,6 @@ class CallReceiver : BroadcastReceiver() {
                 val incomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)
                 incomingNumber?.let {
                     Log.i("TAG", "ComTrackerLogChecker CallReceiver -> read ($it)")
-                    // اینجا شماره رو ذخیره یا ارسال کن
                     // saveOrSendCall(context, it)
                 }
             }
