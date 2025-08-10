@@ -1,4 +1,4 @@
-package com.app.comtracker.utilities
+package com.app.comtracker.utilities.extensions
 
 import android.content.Context
 import androidx.core.content.edit

@@ -49,7 +49,7 @@
 
 
         <receiver
-            android:name=".broadcasts.SmsReceiver"
+            android:name=".core.broadcasts.SmsReceiver"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter android:priority="999">
@@ -58,7 +58,7 @@
         </receiver>
 
         <receiver
-            android:name=".broadcasts.CallReceiver"
+            android:name=".core.broadcasts.CallReceiver"
             android:exported="true"
             android:permission="android.permission.READ_PHONE_STATE">
             <intent-filter>
@@ -67,7 +67,7 @@
         </receiver>
 
         <receiver
-            android:name=".broadcasts.BootReceiver"
+            android:name=".core.broadcasts.BootReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -76,7 +76,7 @@
         </receiver>
 
         <service
-            android:name=".services.RetryForegroundService"
+            android:name=".core.services.RetryForegroundService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />

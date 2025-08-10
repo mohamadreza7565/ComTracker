@@ -1,12 +1,13 @@
-package com.app.comtracker.utilities
+package com.app.comtracker.utilities.extensions
 
+import android.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import com.app.comtracker.services.RetryForegroundService
+import com.app.comtracker.core.services.RetryForegroundService
 
 object NotificationExt {
 
@@ -33,7 +34,7 @@ object NotificationExt {
             .setContentTitle(NOTIFICATION_TITLE)
             .setContentText(NOTIFICATION_CONTENT)
             .setStyle(NotificationCompat.BigTextStyle().bigText(getMessage(service)))
-            .setSmallIcon(android.R.drawable.stat_notify_sync)
+            .setSmallIcon(R.drawable.stat_notify_sync)
             .build()
 
         service.startForeground(NOTIFICATION_ID, notification)
@@ -73,7 +74,7 @@ object NotificationExt {
                 .setContentTitle(NOTIFICATION_TITLE)
                 .setContentText(NOTIFICATION_CONTENT)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(getMessage(context)))
-                .setSmallIcon(android.R.drawable.stat_notify_sync)
+                .setSmallIcon(R.drawable.stat_notify_sync)
                 .build()
 
         val notificationManager =

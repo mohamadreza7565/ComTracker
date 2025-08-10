@@ -1,10 +1,10 @@
-package com.app.comtracker.broadcasts
+package com.app.comtracker.core.broadcasts
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import com.app.comtracker.services.RetryForegroundService
+import com.app.comtracker.core.services.RetryForegroundService
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {

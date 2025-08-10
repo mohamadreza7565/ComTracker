@@ -1,13 +1,11 @@
-package com.app.comtracker.utilities
+package com.app.comtracker.utilities.extensions
 
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import com.app.comtracker.MainActivity
 
 object PermissionExt {
 
