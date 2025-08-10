@@ -6,11 +6,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.app.comtracker.ui.theme.ComTrackerTheme
 import com.app.comtracker.core.services.RetryForegroundService
+import com.app.comtracker.feature.history.HistoryListScreen
 import com.app.comtracker.feature.home.HomeScreen
 import com.app.comtracker.utilities.extensions.PermissionExt
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,8 +29,33 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
+
+            val navController = rememberNavController()
+
             ComTrackerTheme {
-                HomeScreen()
+                NavHost(
+                    navController = navController,
+                    startDestination = "Home",
+                ) {
+                    composable(
+                        route = "Home",
+                        content = {
+                            HomeScreen(
+                                onHistory = {
+                                    navController.navigate("History")
+                                }
+                            )
+                        }
+                    )
+                    composable(
+                        route = "History",
+                        content = {
+                            HistoryListScreen(
+                                onBack = navController::navigateUp
+                            )
+                        }
+                    )
+                }
             }
         }
     }

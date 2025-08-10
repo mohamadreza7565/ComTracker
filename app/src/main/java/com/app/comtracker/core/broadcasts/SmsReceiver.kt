@@ -6,14 +6,15 @@ import android.content.Intent
 import android.provider.Telephony
 import android.telephony.SmsMessage
 import android.util.Log
-import android.widget.Toast
 import com.app.comtracker.core.di.UseCaseEntryPoint
 import com.app.comtracker.core.network.api
+import com.app.comtracker.domain.model.TrackerHistoryType
 import com.app.comtracker.utilities.extensions.PrefExt
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class SmsReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -32,20 +33,26 @@ class SmsReceiver : BroadcastReceiver() {
                 val phoneNumber = sms.originatingAddress ?: ""
                 val message = sms.messageBody
 
-                // TODO Save to db with error flag
 
-                Log.i(
-                    "TAG", "ComTrackerLogChecker SmsReceiver -> read \n ($phoneNumber)\n($message)"
-                )
+                val job = Job()
+                val scope = CoroutineScope(Dispatchers.IO + job)
 
                 val entryPoint = EntryPointAccessors.fromApplication(
                     context,
                     UseCaseEntryPoint::class.java
                 )
-                val postSingleTrackUseCases = entryPoint.postSingleTrackUseCases()
+                val postSingleTrackUseCases = entryPoint.postSingleTrackUseCase()
+                val addHistoryUseCase = entryPoint.addHistoryUseCase()
+                val setUploadTrackerHistoryUseCase = entryPoint.setUploadTrackerHistoryUseCase()
 
-                val job = Job()
-                val scope = CoroutineScope(Dispatchers.IO + job)
+                var trackerId: Long = 0
+                scope.launch {
+                    trackerId = addHistoryUseCase(
+                        type = TrackerHistoryType.SMS,
+                        phoneNumber = phoneNumber,
+                        message = message
+                    )
+                }
 
                 api(
                     scope = scope,
@@ -53,12 +60,12 @@ class SmsReceiver : BroadcastReceiver() {
                     callBack = {
                         onSuccess {
                             Log.i("TAG", "ComTrackerLogChecker SmsReceiver -> onSuccess")
-                            // TODO Update db with success flag
-                            job.cancel() // Release resource
+                            setUploadTrackerHistoryUseCase(trackerId)
+                            job.cancel()
                         }
                         onError { _, _ ->
                             Log.i("TAG", "ComTrackerLogChecker SmsReceiver -> onError")
-                            job.cancel() // Release resource
+                            job.cancel()
                         }
                     }
                 )

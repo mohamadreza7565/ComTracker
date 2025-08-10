@@ -1,6 +1,9 @@
 package com.app.comtracker.core.di
 
-import com.app.comtracker.domain.usecases.PostSingleTrackUseCases
+import com.app.comtracker.domain.usecases.AddTrackerHistoryUseCase
+import com.app.comtracker.domain.usecases.GetNotUploadedTrackerHistoryListUseCase
+import com.app.comtracker.domain.usecases.PostSingleTrackUseCase
+import com.app.comtracker.domain.usecases.SetUploadTrackerHistoryUseCase
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
@@ -8,5 +11,8 @@ import dagger.hilt.components.SingletonComponent
 @EntryPoint
 @InstallIn(SingletonComponent::class)
 interface UseCaseEntryPoint {
-    fun postSingleTrackUseCases(): PostSingleTrackUseCases
+    fun postSingleTrackUseCase(): PostSingleTrackUseCase
+    fun addHistoryUseCase(): AddTrackerHistoryUseCase
+    fun setUploadTrackerHistoryUseCase(): SetUploadTrackerHistoryUseCase
+    fun getNotUploadedTrackerHistoryListUseCase(): GetNotUploadedTrackerHistoryListUseCase
 }

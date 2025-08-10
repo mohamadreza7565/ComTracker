@@ -18,7 +18,7 @@
         tools:ignore="PermissionImpliesUnsupportedChromeOsHardware" />
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <!-- اگر سرویس تماس/پیامک گوش می‌ده -->
+
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
@@ -26,6 +26,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
+        android:name=".core.ComTrackerApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"

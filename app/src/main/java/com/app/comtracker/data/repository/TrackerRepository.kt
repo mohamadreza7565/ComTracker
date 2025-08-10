@@ -6,6 +6,7 @@ import com.app.comtracker.data.model.TrackerHistoryDTO
 
 interface TrackerRepository {
     suspend fun singleTrack(): ApiResponse<TrackDTO>
+    suspend fun addHistory(tracker: TrackerHistoryDTO): Long
     suspend fun getHistory(): List<TrackerHistoryDTO>
     suspend fun getSmsHistory(): List<TrackerHistoryDTO>
     suspend fun getCallHistory(): List<TrackerHistoryDTO>

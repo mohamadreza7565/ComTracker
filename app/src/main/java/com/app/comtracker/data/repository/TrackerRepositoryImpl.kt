@@ -15,6 +15,10 @@ internal class TrackerRepositoryImpl @Inject constructor(
         return remote.singleTrack();
     }
 
+    override suspend fun addHistory(tracker: TrackerHistoryDTO): Long {
+        return local.insert(tracker)
+    }
+
     override suspend fun getHistory(): List<TrackerHistoryDTO> {
         return local.getList()
     }

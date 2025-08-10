@@ -13,6 +13,7 @@ import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class RetryForegroundService : Service() {
@@ -24,30 +25,41 @@ class RetryForegroundService : Service() {
             Log.i("TAG", "ComTrackerLogChecker Foreground Service -> retry")
 
             val entryPoint = EntryPointAccessors.fromApplication(
-                this@RetryForegroundService,
+                applicationContext,
                 UseCaseEntryPoint::class.java
             )
-            val postSingleTrackUseCases = entryPoint.postSingleTrackUseCases()
-
+            val postSingleTrackUseCases = entryPoint.postSingleTrackUseCase()
+            val setUploadTrackerHistoryUseCase = entryPoint.setUploadTrackerHistoryUseCase()
+            val getNotUploadedTrackerHistoryListUseCase =
+                entryPoint.getNotUploadedTrackerHistoryListUseCase()
             val job = Job()
             val scope = CoroutineScope(Dispatchers.IO + job)
 
-            api(
-                scope = scope,
-                block = { postSingleTrackUseCases() },
-                callBack = {
-                    onSuccess {
-                        Log.i("TAG", "ComTrackerLogChecker Foreground Service -> onSuccess")
-                        // TODO Update db with success flag
-                        job.cancel() // Release resource
-                    }
-                    onError { _, _ ->
-                        Log.i("TAG", "ComTrackerLogChecker Foreground Service -> onError")
-                        postDelayed()
-                        job.cancel() // Release resource
-                    }
+            scope.launch {
+                val notUploadedHistory = async { getNotUploadedTrackerHistoryListUseCase() }.await()
+                if (notUploadedHistory.isNotEmpty()) {
+                    val tracker = notUploadedHistory.first()
+                    api(
+                        scope = this,
+                        block = { postSingleTrackUseCases() },
+                        callBack = {
+                            onSuccess {
+                                Log.i("TAG", "ComTrackerLogChecker Foreground Service -> onSuccess")
+                                // TODO Update db with success flag
+                                setUploadTrackerHistoryUseCase(tracker.id)
+                                job.cancel()
+                            }
+                            onError { _, _ ->
+                                Log.i("TAG", "ComTrackerLogChecker Foreground Service -> onError")
+                                postDelayed()
+                                job.cancel()
+                            }
+                        }
+                    )
+                } else {
+                    postDelayed()
                 }
-            )
+            }
 
 
         }

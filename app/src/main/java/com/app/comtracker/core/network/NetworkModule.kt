@@ -24,14 +24,14 @@ object NetworkModule {
     @Singleton
     fun provideKtorHttpClient(): HttpClient {
         return HttpClient(Android) {
-            HttpClientConfig.install(ContentNegotiation) {
+            install(ContentNegotiation) {
                 gson()
             }
 
-            HttpClientConfig.install(HttpTimeout) {
-                HttpTimeoutConfig.requestTimeoutMillis = 30_000
-                HttpTimeoutConfig.connectTimeoutMillis = 20_000
-                HttpTimeoutConfig.socketTimeoutMillis = 30_000
+            install(HttpTimeout) {
+                requestTimeoutMillis = 30_000
+                connectTimeoutMillis = 20_000
+                socketTimeoutMillis = 30_000
             }
 
 

@@ -7,7 +7,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import javax.inject.Inject
 
-class GetTrackerHistoryListUseCases @Inject constructor(
+class GetTrackerHistoryListUseCase @Inject constructor(
     private val trackerRepository: TrackerRepository
 ) {
     suspend operator fun invoke(): ImmutableList<TrackerHistory> {

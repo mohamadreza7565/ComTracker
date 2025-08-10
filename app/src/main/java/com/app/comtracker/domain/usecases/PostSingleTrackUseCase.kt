@@ -6,7 +6,7 @@ import com.app.comtracker.data.repository.TrackerRepository
 import com.app.comtracker.domain.model.TrackModel
 import javax.inject.Inject
 
-class PostSingleTrackUseCases @Inject constructor(
+class PostSingleTrackUseCase @Inject constructor(
     private val trackerRepository: TrackerRepository
 ) {
     suspend operator fun invoke(): ApiResponse<TrackModel> {

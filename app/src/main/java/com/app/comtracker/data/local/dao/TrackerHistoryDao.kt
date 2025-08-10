@@ -26,7 +26,7 @@ interface TrackerHistoryDao {
     suspend fun getNotUploadedList(): List<TrackerHistoryDTO>
 
     @Query("update tbl_tracker_history SET is_uploaded = 1 where id = :id")
-    suspend fun setUploadedFlag(id: Long): List<TrackerHistoryDTO>
+    suspend fun setUploadedFlag(id: Long)
 
     @Update
     suspend fun update(tracker: TrackerHistoryDTO)

@@ -9,8 +9,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "tbl_tracker_history")
 data class TrackerHistoryDTO(
     @ColumnInfo(name = "id")
-    @PrimaryKey(autoGenerate = false)
-    val id: Int,
+    @PrimaryKey(autoGenerate = true)
+    val id: Long,
     @ColumnInfo(name = "is_uploaded", defaultValue = "0")
     val isUploaded: Int,
     @ColumnInfo(name = "type", defaultValue = "")
