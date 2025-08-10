@@ -28,6 +28,8 @@ class RetryForegroundService : Service() {
                 applicationContext,
                 UseCaseEntryPoint::class.java
             )
+            val updateRetryCountTrackerHistoryUseCase =
+                entryPoint.updateRetryCountTrackerHistoryUseCase()
             val postSingleTrackUseCases = entryPoint.postSingleTrackUseCase()
             val setUploadTrackerHistoryUseCase = entryPoint.setUploadTrackerHistoryUseCase()
             val getNotUploadedTrackerHistoryListUseCase =
@@ -47,10 +49,15 @@ class RetryForegroundService : Service() {
                                 Log.i("TAG", "ComTrackerLogChecker Foreground Service -> onSuccess")
                                 // TODO Update db with success flag
                                 setUploadTrackerHistoryUseCase(tracker.id)
+                                postDelayed()
                                 job.cancel()
                             }
                             onError { _, _ ->
                                 Log.i("TAG", "ComTrackerLogChecker Foreground Service -> onError")
+                                updateRetryCountTrackerHistoryUseCase(
+                                    id = tracker.id,
+                                    count = tracker.retryCount + 1
+                                )
                                 postDelayed()
                                 job.cancel()
                             }

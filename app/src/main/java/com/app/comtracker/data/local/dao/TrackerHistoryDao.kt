@@ -13,6 +13,9 @@ interface TrackerHistoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(tracker: TrackerHistoryDTO): Long
 
+    @Query("select * from tbl_tracker_history where id = :id")
+    suspend fun get(id: Long): TrackerHistoryDTO
+
     @Query("select * from tbl_tracker_history")
     suspend fun getList(): List<TrackerHistoryDTO>
 
@@ -25,8 +28,14 @@ interface TrackerHistoryDao {
     @Query("select * from tbl_tracker_history where is_uploaded = 0")
     suspend fun getNotUploadedList(): List<TrackerHistoryDTO>
 
+    @Query("select * from tbl_tracker_history where is_uploaded = 1")
+    suspend fun getUploadedList(): List<TrackerHistoryDTO>
+
     @Query("update tbl_tracker_history SET is_uploaded = 1 where id = :id")
     suspend fun setUploadedFlag(id: Long)
+
+    @Query("update tbl_tracker_history SET retry_count = :count where id = :id")
+    suspend fun updateRetryCount(id: Long, count: Long)
 
     @Update
     suspend fun update(tracker: TrackerHistoryDTO)

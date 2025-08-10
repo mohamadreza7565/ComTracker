@@ -2,6 +2,7 @@ package com.app.comtracker.domain.model
 
 data class TrackerHistory(
     val id: Long,
+    val retryCount: Long,
     val isUploaded: Boolean,
     val type: TrackerHistoryType,
     val phoneNumber: String,

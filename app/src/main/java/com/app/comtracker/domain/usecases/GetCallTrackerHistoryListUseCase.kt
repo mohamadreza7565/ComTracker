@@ -19,6 +19,7 @@ class GetCallTrackerHistoryListUseCase @Inject constructor(
                 message = response.message,
                 phoneNumber = response.phoneNumber,
                 createdAt = response.createdAt,
+                retryCount = response.retryCount
             )
         }.toImmutableList()
     }

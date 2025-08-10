@@ -20,5 +20,7 @@ data class TrackerHistoryDTO(
     @ColumnInfo(name = "message", defaultValue = "")
     val message: String,
     @ColumnInfo(name = "created_at", defaultValue = "")
-    val createdAt: String
+    val createdAt: String,
+    @ColumnInfo(name = "retry_count", defaultValue = "1")
+    val retryCount: Long
 )

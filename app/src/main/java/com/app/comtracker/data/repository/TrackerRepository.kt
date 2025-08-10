@@ -11,5 +11,7 @@ interface TrackerRepository {
     suspend fun getSmsHistory(): List<TrackerHistoryDTO>
     suspend fun getCallHistory(): List<TrackerHistoryDTO>
     suspend fun getNotUploadedList(): List<TrackerHistoryDTO>
+    suspend fun getUploadedList(): List<TrackerHistoryDTO>
     suspend fun setUploadedFlag(id: Long)
+    suspend fun updateRetryCountTrackerHistory(id: Long, count: Long)
 }

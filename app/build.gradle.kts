@@ -75,6 +75,7 @@ dependencies {
        implementation(ktor.content.negotiation)
        implementation(ktor.gson)
        implementation(kotlin.coroutines.core)
+       implementation("com.github.samanzamani:PersianDate:1.7.1")
 
        ksp(room.compiler)
        implementation(room)

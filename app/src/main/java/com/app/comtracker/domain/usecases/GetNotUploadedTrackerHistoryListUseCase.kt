@@ -19,6 +19,7 @@ class GetNotUploadedTrackerHistoryListUseCase @Inject constructor(
                 message = response.message,
                 phoneNumber = response.phoneNumber,
                 createdAt = response.createdAt,
+                retryCount = response.retryCount
             )
         }.toImmutableList()
     }

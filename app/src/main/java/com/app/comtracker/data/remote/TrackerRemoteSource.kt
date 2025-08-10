@@ -13,7 +13,7 @@ internal class TrackerRemoteSource @Inject constructor(
 
     suspend fun singleTrack(): ApiResponse<TrackDTO> {
         return client.fetch<ApiResponse.Base<TrackDTO>, TrackDTO> {
-            url("")
+            url("https://stage-auth.darkube.app/api/v1/config")
         }
     }
 

@@ -1,7 +1,11 @@
 package com.app.comtracker.feature.history
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,22 +14,33 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.comtracker.utilities.onSuccess
@@ -59,62 +74,198 @@ fun HistoryListScreen(
         modifier = modifier.fillMaxSize(),
         content = { innerPadding ->
             state.onSuccess { viewState ->
-                LazyColumn(
+                Column(
                     modifier = Modifier
-                        .fillMaxSize()
                         .padding(innerPadding),
                     content = {
 
-                        items(viewState.histories) { history ->
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                verticalArrangement = Arrangement.Center,
-                                content = {
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        modifier = Modifier.fillMaxSize(),
+                        LazyRow(
+                            contentPadding = PaddingValues(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            content = {
+                                items(
+                                    count = viewState.filters.size,
+                                    key = { it }
+                                ) { index ->
+
+                                    val isSelected = index == viewState.selectedFilterIndex
+                                    val containerColor = when (isSelected) {
+                                        true -> MaterialTheme.colorScheme.primary
+                                        false -> MaterialTheme.colorScheme.secondaryContainer
+                                    }
+
+                                    val textColor = when (isSelected) {
+                                        true -> MaterialTheme.colorScheme.onPrimary
+                                        false -> MaterialTheme.colorScheme.onSecondaryContainer
+                                    }
+
+                                    Card(
+                                        shape = CircleShape,
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = containerColor,
+                                            contentColor = textColor
+                                        ),
+                                        onClick = {
+                                            viewModel.updateFilter(index)
+                                        },
                                         content = {
-                                            Row {
-                                                Text(
-                                                    color = if (history.isUploaded) Color.Red else Color.Green,
-                                                    text = if (history.isUploaded) "Uploaded" else "Pending"
-                                                )
-                                                Spacer(modifier = Modifier.width(16.dp))
-                                            }
                                             Text(
-                                                text = history.type.name
+                                                modifier = Modifier.padding(
+                                                    horizontal = 16.dp,
+                                                    vertical = 8.dp
+                                                ),
+                                                text = viewState.filters[index]
                                             )
                                         }
                                     )
+                                }
+                            }
+                        )
 
-                                    Spacer(modifier = Modifier.height(8.dp))
+                        if (viewState.histories.isEmpty()) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center,
+                                content = {
+                                    Text(text = "Not tracked any thing")
+                                }
+                            )
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                content = {
 
-                                    Text(
-                                        text = "Phone number : ${history.phoneNumber}"
-                                    )
+                                    items(count = viewState.histories.size, key = { it }) { index ->
+                                        val history = viewState.histories[index]
+                                        Column(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 16.dp),
+                                            verticalArrangement = Arrangement.Center,
+                                            content = {
+                                                Spacer(modifier = Modifier.height(8.dp))
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                                    modifier = Modifier.fillMaxSize(),
+                                                    content = {
+                                                        Row {
+                                                            val status =
+                                                                if (history.isUploaded) "Success" else "Pending"
+                                                            val containerColor =
+                                                                if (history.isUploaded) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.errorContainer
 
+                                                            val textColor =
+                                                                if (history.isUploaded) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onErrorContainer
 
-                                    if (history.message.isNotEmpty()) {
-                                        Spacer(modifier = Modifier.height(8.dp))
+                                                            Box(
+                                                                modifier = Modifier
+                                                                    .clip(
+                                                                        RoundedCornerShape(4.dp)
+                                                                    )
+                                                                    .background(containerColor),
+                                                                contentAlignment = Alignment.Center,
+                                                                content = {
+                                                                    Text(
+                                                                        modifier = Modifier.padding(
+                                                                            horizontal = 8.dp,
+                                                                            vertical = 4.dp
+                                                                        ),
+                                                                        color = textColor,
+                                                                        text = "$status (${history.retryCount})"
+                                                                    )
+                                                                })
+                                                            Spacer(modifier = Modifier.width(8.dp))
+                                                            Text(
+                                                                modifier = Modifier.padding(
+                                                                    horizontal = 8.dp,
+                                                                    vertical = 4.dp
+                                                                ),
+                                                                color = textColor,
+                                                                text = history.createdAt
+                                                            )
+                                                        }
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .clip(
+                                                                    RoundedCornerShape(4.dp)
+                                                                )
+                                                                .background(MaterialTheme.colorScheme.inversePrimary),
+                                                            contentAlignment = Alignment.Center,
+                                                            content = {
+                                                                Text(
+                                                                    modifier = Modifier.padding(
+                                                                        horizontal = 8.dp,
+                                                                        vertical = 4.dp
+                                                                    ),
+                                                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                                                    text = history.type.name
+                                                                )
+                                                            }
+                                                        )
+                                                    }
+                                                )
 
-                                        Text(
-                                            text = history.message
+                                                Spacer(modifier = Modifier.height(8.dp))
+
+                                                Text(
+                                                    text = "Phone number : ${history.phoneNumber}"
+                                                )
+
+                                                if (history.message.isNotEmpty()) {
+                                                    Spacer(modifier = Modifier.height(8.dp))
+
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .clip(
+                                                                RoundedCornerShape(8.dp)
+                                                            )
+                                                            .background(MaterialTheme.colorScheme.secondaryContainer),
+                                                        content = {
+                                                            Text(
+                                                                style = TextStyle(
+                                                                    textDirection = TextDirection.ContentOrRtl
+                                                                ),
+                                                                modifier = Modifier
+                                                                    .fillMaxWidth()
+                                                                    .padding(16.dp),
+                                                                text = history.message
+                                                            )
+                                                        }
+                                                    )
+                                                }
+
+                                                Spacer(modifier = Modifier.height(8.dp))
+
+                                                if (!history.isUploaded) {
+                                                    Button(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        shape = RoundedCornerShape(8.dp),
+                                                        onClick = {
+                                                            viewModel.retry(
+                                                                index = index,
+                                                                history = history
+                                                            )
+                                                        }
+                                                    ) {
+                                                        Text(
+                                                            text = "Retry"
+                                                        )
+                                                    }
+                                                }
+                                                Spacer(modifier = Modifier.height(8.dp))
+                                                HorizontalDivider()
+                                                Spacer(modifier = Modifier.height(8.dp))
+
+                                            }
                                         )
                                     }
-
-                                    Spacer(modifier = Modifier.height(8.dp))
-
-                                    HorizontalDivider()
-                                    Spacer(modifier = Modifier.height(8.dp))
 
                                 }
                             )
                         }
-
                     }
                 )
             }

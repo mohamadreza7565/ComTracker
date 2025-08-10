@@ -12,7 +12,7 @@ internal class TrackerRepositoryImpl @Inject constructor(
     private val remote: TrackerRemoteSource
 ) : TrackerRepository {
     override suspend fun singleTrack(): ApiResponse<TrackDTO> {
-        return remote.singleTrack();
+        return remote.singleTrack()
     }
 
     override suspend fun addHistory(tracker: TrackerHistoryDTO): Long {
@@ -35,7 +35,15 @@ internal class TrackerRepositoryImpl @Inject constructor(
         return local.getNotUploadedList()
     }
 
+    override suspend fun getUploadedList(): List<TrackerHistoryDTO> {
+        return local.getUploadedList()
+    }
+
     override suspend fun setUploadedFlag(id: Long) {
         local.setUploadedFlag(id = id)
+    }
+
+    override suspend fun updateRetryCountTrackerHistory(id: Long, count: Long) {
+        local.updateRetryCount(id = id, count = count)
     }
 }

@@ -11,7 +11,7 @@ class CallBack<T> {
     var debounceJob: Job? = null
     var loading: (isLoading: Boolean) -> Unit = {}
     var success: suspend (T) -> Unit = {}
-    var error: (String?, Int) -> Unit = { _, _ -> }
+    var error: suspend (String?, Int) -> Unit = { _, _ -> }
 
     fun onLoading(block: (isLoading: Boolean) -> Unit) {
         this.loading = block
@@ -21,7 +21,7 @@ class CallBack<T> {
         this.success = block
     }
 
-    fun onError(block: (String?, Int) -> Unit) {
+    fun onError(block: suspend (String?, Int) -> Unit) {
         this.error = block
     }
 }
@@ -33,7 +33,9 @@ fun <T> execute(
 ) {
     CallBack<T>().apply(callBack).apply {
         val handler = CoroutineExceptionHandler { _, throwable ->
-            error.invoke(throwable.message, 0)
+            scope.launch {
+                error.invoke(throwable.message, 0)
+            }
         }
         loading(true)
         scope.launch(handler) {
@@ -51,7 +53,9 @@ fun <T> api(
 ): Job {
     CallBack<T>().apply(callBack).apply {
         val handler = CoroutineExceptionHandler { _, throwable ->
-            error.invoke(throwable.message, 0)
+            scope.launch {
+                error.invoke(throwable.message, 0)
+            }
         }
         loading(true)
         return scope.launch(handler) {
@@ -76,7 +80,9 @@ fun <T> debounceApi(
     CallBack<T>().apply(callBack).apply {
         job?.cancel()
         val handler = CoroutineExceptionHandler { _, throwable ->
-            error.invoke(throwable.message, 0)
+            scope.launch {
+                error.invoke(throwable.message, 0)
+            }
         }
         loading(true)
         return scope.launch(handler) {

@@ -7,11 +7,11 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import javax.inject.Inject
 
-class GetSmsTrackerHistoryListUseCase @Inject constructor(
+class GetUploadedTrackerHistoryListUseCase @Inject constructor(
     private val trackerRepository: TrackerRepository
 ) {
     suspend operator fun invoke(): ImmutableList<TrackerHistory> {
-        return trackerRepository.getSmsHistory().map { response ->
+        return trackerRepository.getUploadedList().map { response ->
             TrackerHistory(
                 id = response.id,
                 isUploaded = response.isUploaded == 1,
