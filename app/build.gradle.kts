@@ -75,5 +75,11 @@ dependencies {
        implementation(ktor.content.negotiation)
        implementation(ktor.gson)
        implementation(kotlin.coroutines.core)
+
+       ksp(room.compiler)
+       implementation(room)
+       implementation(room.ktx)
+
+       implementation(kotlin.immutable)
    }
 }
