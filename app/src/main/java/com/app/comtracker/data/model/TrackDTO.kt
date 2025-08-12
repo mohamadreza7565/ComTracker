@@ -4,5 +4,6 @@ import androidx.annotation.Keep
 
 @Keep
 data class TrackDTO(
-    val id: Int?
+    val success: Boolean?,
+    val status: String?,
 )

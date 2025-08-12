@@ -14,7 +14,7 @@ data class TrackerHistoryDTO(
     @ColumnInfo(name = "is_uploaded", defaultValue = "0")
     val isUploaded: Int,
     @ColumnInfo(name = "type", defaultValue = "")
-    val type: String,
+    val type: Int,
     @ColumnInfo(name = "phone_number", defaultValue = "")
     val phoneNumber: String,
     @ColumnInfo(name = "message", defaultValue = "")

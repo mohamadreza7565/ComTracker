@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -32,9 +34,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -131,7 +137,36 @@ fun HistoryListScreen(
                                 }
                             )
                         } else {
+
+                            val listState = rememberLazyListState()
+
+                            val lastVisibleItemIndex by remember {
+                                derivedStateOf {
+                                    listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                                }
+                            }
+                            val totalItemsCount by remember {
+                                derivedStateOf {
+                                    listState.layoutInfo.totalItemsCount
+                                }
+                            }
+
+                            LaunchedEffect(lastVisibleItemIndex >= totalItemsCount - 1) {
+                                snapshotFlow {
+                                    lastVisibleItemIndex >= viewState.histories.lastIndex &&
+                                            !viewState.isLastPage &&
+                                            viewState.histories.isNotEmpty()
+                                }
+                                    .collect { isLastItem ->
+                                        if (isLastItem) {
+                                            viewModel.getAllHistories(loadMore = true)
+                                        }
+                                    }
+                            }
+
+
                             LazyColumn(
+                                state = listState,
                                 modifier = Modifier
                                     .fillMaxSize(),
                                 content = {

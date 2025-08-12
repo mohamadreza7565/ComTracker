@@ -8,36 +8,22 @@ import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.request
-import io.ktor.client.statement.HttpResponse
 import io.ktor.http.isSuccess
 import kotlinx.io.IOException
-import kotlin.text.orEmpty
 
-suspend inline fun <reified T> HttpResponse.execute() = body<T>()
 
-suspend inline fun <reified T, reified R> HttpClient.fetch(
+suspend inline fun <reified T> HttpClient.fetch(
     block: HttpRequestBuilder.() -> Unit
-): ApiResponse<R> {
+): ApiResponse<T> {
     return try {
         val call = request { block() }
         val response = call.body<T>()
 
         when (call.status.isSuccess()) {
-            true -> {
-                val data = when (response) {
-                    is ApiResponse.Base<*> -> response.data
-                    else -> response
-                } as R
-                ApiResponse.Success(
-                    data = data
-                )
-            }
+            true -> ApiResponse.Success(data = response)
 
             false -> {
-                val errorMessage = when (response) {
-                    is ApiResponse.Base<*> -> response.message ?: UN_HANDLE_EXCEPTION_MESSAGE
-                    else -> UN_HANDLE_EXCEPTION_MESSAGE
-                }
+                val errorMessage = UN_HANDLE_EXCEPTION_MESSAGE
                 ApiResponse.Error(
                     status = call.status.value,
                     message = errorMessage
@@ -47,12 +33,12 @@ suspend inline fun <reified T, reified R> HttpClient.fetch(
     } catch (e: ClientRequestException) {
         ApiResponse.Error(
             status = e.response.status.value,
-            message = e.response.body<ApiResponse.Base<T>>().message.orEmpty()
+            message = UN_HANDLE_EXCEPTION_MESSAGE
         )
     } catch (e: ServerResponseException) {
         ApiResponse.Error(
             status = e.response.status.value,
-            message = e.response.body<ApiResponse.Base<T>>().message.orEmpty()
+            message = UN_HANDLE_EXCEPTION_MESSAGE
         )
     } catch (_: IOException) {
         ApiResponse.Error(message = IO_EXCEPTION_MESSAGE, status = 0)

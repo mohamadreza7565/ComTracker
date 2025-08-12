@@ -23,10 +23,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        PermissionExt.checkAndRequestPermissions(
-            activity = this,
-            onFailed = {}
-        )
+        PermissionExt.checkAndRequestPermissions(activity = this, onFailed = {})
 
         setContent {
 
@@ -38,23 +35,18 @@ class MainActivity : ComponentActivity() {
                     startDestination = "Home",
                 ) {
                     composable(
-                        route = "Home",
-                        content = {
+                        route = "Home", content = {
                             HomeScreen(
                                 onHistory = {
                                     navController.navigate("History")
-                                }
-                            )
-                        }
-                    )
+                                })
+                        })
                     composable(
-                        route = "History",
-                        content = {
+                        route = "History", content = {
                             HistoryListScreen(
                                 onBack = navController::navigateUp
                             )
-                        }
-                    )
+                        })
                 }
             }
         }

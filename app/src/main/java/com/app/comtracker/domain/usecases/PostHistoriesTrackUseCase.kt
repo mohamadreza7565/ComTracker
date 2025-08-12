@@ -2,20 +2,15 @@ package com.app.comtracker.domain.usecases
 
 import com.app.comtracker.core.network.ApiResponse
 import com.app.comtracker.core.network.mapper
-import com.app.comtracker.data.model.TrackBodyModelDTO
 import com.app.comtracker.data.repository.TrackerRepository
 import com.app.comtracker.domain.model.TrackModel
-import com.app.comtracker.domain.model.TrackerHistory
-import com.app.comtracker.domain.model.TrackerHistoryType
 import javax.inject.Inject
 
-class PostSingleTrackUseCase @Inject constructor(
+class PostHistoriesTrackUseCase @Inject constructor(
     private val trackerRepository: TrackerRepository
 ) {
-    suspend operator fun invoke(
-        localId: Long
-    ): ApiResponse<TrackModel> {
-        return trackerRepository.singleTrack(localId = localId).mapper { response ->
+    suspend operator fun invoke(): ApiResponse<TrackModel> {
+        return trackerRepository.postHistories().mapper { response ->
             TrackModel(
                 success = response?.success == true,
                 status = response?.status ?: "0",

@@ -28,44 +28,27 @@ class RetryForegroundService : Service() {
                 applicationContext,
                 UseCaseEntryPoint::class.java
             )
-            val updateRetryCountTrackerHistoryUseCase =
-                entryPoint.updateRetryCountTrackerHistoryUseCase()
-            val postSingleTrackUseCases = entryPoint.postSingleTrackUseCase()
-            val setUploadTrackerHistoryUseCase = entryPoint.setUploadTrackerHistoryUseCase()
-            val getNotUploadedTrackerHistoryListUseCase =
-                entryPoint.getNotUploadedTrackerHistoryListUseCase()
+            val postHistoriesTrackUseCase = entryPoint.postHistoriesTrackUseCase()
             val job = Job()
             val scope = CoroutineScope(Dispatchers.IO + job)
 
             scope.launch {
-                val notUploadedHistory = async { getNotUploadedTrackerHistoryListUseCase() }.await()
-                if (notUploadedHistory.isNotEmpty()) {
-                    val tracker = notUploadedHistory.first()
-                    api(
-                        scope = this,
-                        block = { postSingleTrackUseCases() },
-                        callBack = {
-                            onSuccess {
-                                Log.i("TAG", "ComTrackerLogChecker Foreground Service -> onSuccess")
-                                // TODO Update db with success flag
-                                setUploadTrackerHistoryUseCase(tracker.id)
-                                postDelayed()
-                                job.cancel()
-                            }
-                            onError { _, _ ->
-                                Log.i("TAG", "ComTrackerLogChecker Foreground Service -> onError")
-                                updateRetryCountTrackerHistoryUseCase(
-                                    id = tracker.id,
-                                    count = tracker.retryCount + 1
-                                )
-                                postDelayed()
-                                job.cancel()
-                            }
+                api(
+                    scope = this,
+                    block = { postHistoriesTrackUseCase() },
+                    callBack = {
+                        onSuccess {
+                            Log.i("TAG", "ComTrackerLogChecker Foreground Service -> onSuccess")
+                            postDelayed()
+                            job.cancel()
                         }
-                    )
-                } else {
-                    postDelayed()
-                }
+                        onError { _, _ ->
+                            Log.i("TAG", "ComTrackerLogChecker Foreground Service -> onError")
+                            postDelayed()
+                            job.cancel()
+                        }
+                    }
+                )
             }
 
 

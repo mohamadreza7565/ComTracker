@@ -10,6 +10,6 @@ data class TrackerHistory(
     val createdAt: String
 )
 
-enum class TrackerHistoryType() {
-    SMS, CALL
+enum class TrackerHistoryType(val key: Int) {
+    SMS(key = 2), CALL(key = 1), OTHER(key = 0)
 }

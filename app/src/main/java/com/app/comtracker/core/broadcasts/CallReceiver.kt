@@ -13,6 +13,7 @@ import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class CallReceiver : BroadcastReceiver() {
@@ -36,26 +37,28 @@ class CallReceiver : BroadcastReceiver() {
                     )
                     val postSingleTrackUseCases = entryPoint.postSingleTrackUseCase()
                     val addHistoryUseCase = entryPoint.addHistoryUseCase()
-                    val setUploadTrackerHistoryUseCase = entryPoint.setUploadTrackerHistoryUseCase()
                     var trackerId: Long = 0
                     scope.launch {
-                        trackerId = addHistoryUseCase(
-                            type = TrackerHistoryType.CALL, phoneNumber = it
-                        )
+                        trackerId = async {
+                            addHistoryUseCase(
+                                type = TrackerHistoryType.CALL, phoneNumber = it
+                            )
+                        }.await()
+                        api(
+                            scope = scope,
+                            block = { postSingleTrackUseCases(trackerId) },
+                            callBack = {
+                                onSuccess {
+                                    Log.i("TAG", "ComTrackerLogChecker CallReceiver -> onSuccess")
+                                    job.cancel()
+                                }
+                                onError { _, _ ->
+                                    Log.i("TAG", "ComTrackerLogChecker CallReceiver -> onError")
+                                    job.cancel()
+                                }
+                            })
                     }
 
-
-                    api(scope = scope, block = { postSingleTrackUseCases() }, callBack = {
-                        onSuccess {
-                            Log.i("TAG", "ComTrackerLogChecker CallReceiver -> onSuccess")
-                            setUploadTrackerHistoryUseCase(trackerId)
-                            job.cancel()
-                        }
-                        onError { _, _ ->
-                            Log.i("TAG", "ComTrackerLogChecker CallReceiver -> onError")
-                            job.cancel()
-                        }
-                    })
 
                 }
             }

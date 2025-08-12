@@ -1,5 +1,6 @@
 package com.app.comtracker.feature.history
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.comtracker.core.network.api
@@ -16,6 +17,7 @@ import com.app.comtracker.domain.usecases.UpdateRetryCountTrackerHistoryUseCase
 import com.app.comtracker.utilities.State
 import com.app.comtracker.utilities.pushToSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,76 +39,117 @@ class HistoryListViewModel @Inject constructor(
     private val _state = MutableStateFlow<State<HistoryListState>>(State.Init(HistoryListState()))
     val state = _state.asStateFlow()
 
+    private val pageSize = 200
+
     init {
         getAllHistories()
     }
 
-    private fun getAllHistories() {
+    fun getAllHistories(loadMore: Boolean = false) {
+
+        val page = when (loadMore) {
+            true -> (state.value.data?.page ?: 1) + 1
+            false -> 1
+        }
+
         execute(
-            block = { getTrackerHistoryListUseCase() },
+            block = { getTrackerHistoryListUseCase(page = page, pageSize = pageSize) },
             scope = viewModelScope,
             callBack = {
                 onSuccess { response ->
-                    _state.update {
-                        it.data?.copy(histories = response).pushToSuccess()
-                    }
+                    updateList(
+                        response = response,
+                        page = page,
+                        loadMore = loadMore
+                    )
                 }
             }
         )
     }
 
 
-    private fun getNotUploadedHistories() {
+    private fun getNotUploadedHistories(loadMore: Boolean = false) {
+
+        val page = when (loadMore) {
+            true -> (state.value.data?.page ?: 1) + 1
+            false -> 1
+        }
+
         execute(
-            block = { getNotUploadedTrackerHistoryListUseCase() },
+            block = { getNotUploadedTrackerHistoryListUseCase(page = page, pageSize = pageSize) },
             scope = viewModelScope,
             callBack = {
                 onSuccess { response ->
-                    _state.update {
-                        it.data?.copy(histories = response).pushToSuccess()
-                    }
+                    updateList(
+                        response = response,
+                        page = page,
+                        loadMore = loadMore
+                    )
                 }
             }
         )
     }
 
-    private fun getUploadedHistories() {
+    private fun getUploadedHistories(loadMore: Boolean = false) {
+
+        val page = when (loadMore) {
+            true -> (state.value.data?.page ?: 1) + 1
+            false -> 1
+        }
+
         execute(
-            block = { getUploadedTrackerHistoryListUseCase() },
+            block = { getUploadedTrackerHistoryListUseCase(page = page, pageSize = pageSize) },
             scope = viewModelScope,
             callBack = {
                 onSuccess { response ->
-                    _state.update {
-                        it.data?.copy(histories = response).pushToSuccess()
-                    }
+                    updateList(
+                        response = response,
+                        page = page,
+                        loadMore = loadMore
+                    )
                 }
             }
         )
     }
 
-    private fun getSmsTrackerHistoryList() {
+    private fun getSmsTrackerHistoryList(loadMore: Boolean = false) {
+
+        val page = when (loadMore) {
+            true -> (state.value.data?.page ?: 1) + 1
+            false -> 1
+        }
+
         execute(
-            block = { getSmsTrackerHistoryListUseCase() },
+            block = { getSmsTrackerHistoryListUseCase(page = page, pageSize = pageSize) },
             scope = viewModelScope,
             callBack = {
                 onSuccess { response ->
-                    _state.update {
-                        it.data?.copy(histories = response).pushToSuccess()
-                    }
+                    updateList(
+                        response = response,
+                        page = page,
+                        loadMore = loadMore
+                    )
                 }
             }
         )
     }
 
-    private fun getCallTrackerHistoryList() {
+    private fun getCallTrackerHistoryList(loadMore: Boolean = false) {
+        val page = when (loadMore) {
+            true -> (state.value.data?.page ?: 1) + 1
+            false -> 1
+        }
+
         execute(
-            block = { getCallTrackerHistoryListUseCase() },
+            block = { getCallTrackerHistoryListUseCase(page = page, pageSize = pageSize) },
             scope = viewModelScope,
             callBack = {
                 onSuccess { response ->
-                    _state.update {
-                        it.data?.copy(histories = response).pushToSuccess()
-                    }
+                    updateList(
+                        response = response,
+                        page = page,
+                        loadMore = loadMore
+                    )
                 }
             }
         )
@@ -130,7 +173,7 @@ class HistoryListViewModel @Inject constructor(
         if (histories.isEmpty()) return
         api(
             scope = viewModelScope,
-            block = { postSingleTrackUseCase() },
+            block = { postSingleTrackUseCase(localId = history.id) },
             callBack = {
                 onSuccess {
                     setUploadTrackerHistoryUseCase(history.id)
@@ -152,6 +195,23 @@ class HistoryListViewModel @Inject constructor(
                 }
             }
         )
+    }
+
+    private fun updateList(
+        response: ImmutableList<TrackerHistory>,
+        loadMore: Boolean,
+        page: Int
+    ) {
+        val histories = state.value.data?.histories.orEmpty().toMutableList()
+        if (!loadMore) histories.clear()
+        histories.addAll(response)
+        _state.update {
+            it.data?.copy(
+                isLastPage = response.isEmpty(),
+                page = page,
+                histories = histories.toImmutableList()
+            ).pushToSuccess()
+        }
     }
 
 }

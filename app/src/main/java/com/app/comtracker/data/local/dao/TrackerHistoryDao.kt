@@ -16,20 +16,23 @@ interface TrackerHistoryDao {
     @Query("select * from tbl_tracker_history where id = :id")
     suspend fun get(id: Long): TrackerHistoryDTO
 
-    @Query("select * from tbl_tracker_history")
-    suspend fun getList(): List<TrackerHistoryDTO>
+    @Query("DELETE FROM tbl_tracker_history where id = :id")
+    suspend fun delete(id: Long): TrackerHistoryDTO
 
-    @Query("select * from tbl_tracker_history where type = 'sms'")
-    suspend fun getSmsHistoryList(): List<TrackerHistoryDTO>
+    @Query("SELECT * FROM tbl_tracker_history ORDER BY id DESC LIMIT :limit OFFSET :offset")
+    suspend fun getList(limit: Int, offset: Int): List<TrackerHistoryDTO>
 
-    @Query("select * from tbl_tracker_history where type = 'call'")
-    suspend fun getCallHistoryList(): List<TrackerHistoryDTO>
+    @Query("select * from tbl_tracker_history where type = 2 ORDER BY id DESC LIMIT :limit OFFSET :offset")
+    suspend fun getSmsHistoryList(limit: Int, offset: Int): List<TrackerHistoryDTO>
 
-    @Query("select * from tbl_tracker_history where is_uploaded = 0")
-    suspend fun getNotUploadedList(): List<TrackerHistoryDTO>
+    @Query("select * from tbl_tracker_history where type = 1 ORDER BY id DESC LIMIT :limit OFFSET :offset")
+    suspend fun getCallHistoryList(limit: Int, offset: Int): List<TrackerHistoryDTO>
 
-    @Query("select * from tbl_tracker_history where is_uploaded = 1")
-    suspend fun getUploadedList(): List<TrackerHistoryDTO>
+    @Query("select * from tbl_tracker_history where is_uploaded = 0 ORDER BY id DESC LIMIT :limit OFFSET :offset")
+    suspend fun getNotUploadedList(limit: Int, offset: Int): List<TrackerHistoryDTO>
+
+    @Query("select * from tbl_tracker_history where is_uploaded = 1 ORDER BY id DESC LIMIT :limit OFFSET :offset")
+    suspend fun getUploadedList(limit: Int, offset: Int): List<TrackerHistoryDTO>
 
     @Query("update tbl_tracker_history SET is_uploaded = 1 where id = :id")
     suspend fun setUploadedFlag(id: Long)
@@ -39,5 +42,20 @@ interface TrackerHistoryDao {
 
     @Update
     suspend fun update(tracker: TrackerHistoryDTO)
+
+    @Query("DELETE FROM tbl_tracker_history where type = 1")
+    suspend fun deleteAllCall()
+
+    @Query("DELETE FROM tbl_tracker_history where type = 2")
+    suspend fun deleteAllSms()
+
+    @Query("DELETE FROM tbl_tracker_history where is_uploaded = 1")
+    suspend fun deleteAllUploaded()
+
+    @Query("DELETE FROM tbl_tracker_history where is_uploaded = 0")
+    suspend fun deleteAllNotUploaded()
+
+    @Query("DELETE FROM tbl_tracker_history")
+    suspend fun deleteAll()
 
 }

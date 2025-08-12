@@ -13,5 +13,7 @@ data class HistoryListState(
         "Sms",
         "Call"
     ),
-    val selectedFilterIndex: Int = 0
+    val page: Int = 1,
+    val isLastPage: Boolean = false,
+    val selectedFilterIndex: Int = 0,
 )
