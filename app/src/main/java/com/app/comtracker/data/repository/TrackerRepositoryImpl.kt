@@ -36,9 +36,9 @@ internal class TrackerRepositoryImpl @Inject constructor(
     }
 
     override suspend fun postHistories(): ApiResponse<TrackDTO> {
-        val trackerHistories = getNotUploadedList(page = 1, pageSize = 10)
+        val trackerHistories = getNotUploadedList(page = 1, pageSize = 100)
         if (trackerHistories.isEmpty()) {
-            return ApiResponse.Error(message = "EMPTY");
+            return ApiResponse.Error(message = "EMPTY")
         }
         val body = trackerHistories.map { trackerHistory ->
             TrackBodyModelDTO(

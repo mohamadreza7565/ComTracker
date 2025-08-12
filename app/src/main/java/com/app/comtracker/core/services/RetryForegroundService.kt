@@ -56,7 +56,7 @@ class RetryForegroundService : Service() {
     }
 
     private fun postDelayed() {
-        handler.postDelayed(runnable, 60_000)
+        handler.postDelayed(runnable, 10 * 60_000)
     }
 
     override fun onCreate() {
