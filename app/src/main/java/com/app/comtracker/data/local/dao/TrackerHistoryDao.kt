@@ -17,7 +17,7 @@ interface TrackerHistoryDao {
     suspend fun get(id: Long): TrackerHistoryDTO
 
     @Query("DELETE FROM tbl_tracker_history where id = :id")
-    suspend fun delete(id: Long): TrackerHistoryDTO
+    suspend fun delete(id: Long)
 
     @Query("SELECT * FROM tbl_tracker_history ORDER BY id DESC LIMIT :limit OFFSET :offset")
     suspend fun getList(limit: Int, offset: Int): List<TrackerHistoryDTO>
