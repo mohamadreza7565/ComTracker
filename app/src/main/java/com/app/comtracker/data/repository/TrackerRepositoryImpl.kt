@@ -1,6 +1,5 @@
 package com.app.comtracker.data.repository
 
-import android.util.Log
 import com.app.comtracker.core.network.ApiResponse
 import com.app.comtracker.core.network.onError
 import com.app.comtracker.core.network.onSuccess
@@ -23,7 +22,8 @@ internal class TrackerRepositoryImpl @Inject constructor(
                 leadDateTime = trackerHistory.createdAt,
                 text = trackerHistory.message,
                 phoneNumber = trackerHistory.phoneNumber,
-                leadType = trackerHistory.type
+                leadType = trackerHistory.type,
+                storeId = 1
             )
 
 
@@ -45,7 +45,8 @@ internal class TrackerRepositoryImpl @Inject constructor(
                 leadDateTime = trackerHistory.createdAt,
                 text = trackerHistory.message,
                 phoneNumber = trackerHistory.phoneNumber,
-                leadType = trackerHistory.type
+                leadType = trackerHistory.type,
+                storeId = 1
             )
         }
         return remote.multiTrack(body = body).onSuccess {

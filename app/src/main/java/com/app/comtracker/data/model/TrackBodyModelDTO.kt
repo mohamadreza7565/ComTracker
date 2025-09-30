@@ -13,5 +13,7 @@ data class TrackBodyModelDTO(
     @SerializedName("PhoneNumber")
     val phoneNumber: String,
     @SerializedName("Text")
-    val text: String
+    val text: String,
+    @SerializedName("storeId")
+    val storeId: Int
 )

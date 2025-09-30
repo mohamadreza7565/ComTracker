@@ -2,11 +2,8 @@ package com.app.comtracker.domain.usecases
 
 import com.app.comtracker.core.network.ApiResponse
 import com.app.comtracker.core.network.mapper
-import com.app.comtracker.data.model.TrackBodyModelDTO
 import com.app.comtracker.data.repository.TrackerRepository
 import com.app.comtracker.domain.model.TrackModel
-import com.app.comtracker.domain.model.TrackerHistory
-import com.app.comtracker.domain.model.TrackerHistoryType
 import javax.inject.Inject
 
 class PostSingleTrackUseCase @Inject constructor(
